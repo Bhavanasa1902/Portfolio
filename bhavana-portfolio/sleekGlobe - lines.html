@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sleek Globe — Solarized Light</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #fdf6e3;
+    }
+    #chartdiv {
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+  </style>
+  <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/geodata/continentsLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+</head>
+<body>
+  <div id="chartdiv"></div>
+  <script>
+    am5.ready(function () {
+      var root = am5.Root.new("chartdiv");
+      root.setThemes([am5themes_Animated.new(root)]);
+
+      var chart = root.container.children.push(
+        am5map.MapChart.new(root, {
+          panX: "rotateX",
+          panY: "rotateY",
+          projection: am5map.geoOrthographic(),
+          paddingTop: 0,
+          paddingBottom: 0,
+          rotationX: -77.6,
+          rotationY: -13
+        })
+      );
+
+      // Background sphere
+      var backgroundSeries = chart.series.push(
+        am5map.MapPolygonSeries.new(root, {})
+      );
+      backgroundSeries.mapPolygons.template.setAll({
+        fill: am5.color(0xeee8d5),
+        fillOpacity: 0.6,
+        strokeOpacity: 0
+      });
+      backgroundSeries.data.push({
+        geometry: am5map.getGeoRectangle(90, 180, -90, -180)
+      });
+
+      // Continents
+      var polygonSeries = chart.series.push(
+        am5map.MapPolygonSeries.new(root, {
+          geoJSON: am5geodata_continentsLow
+        })
+      );
+      polygonSeries.mapPolygons.template.setAll({
+        fill: am5.color(0x073642),
+        stroke: am5.color(0x073642),
+        strokeWidth: 1.5,
+        strokeOpacity: 1,
+        interactive: false
+      });
+
+      // Grid
+      var graticuleSeries = chart.series.push(
+        am5map.GraticuleSeries.new(root, {})
+      );
+      graticuleSeries.mapLines.template.setAll({
+        stroke: am5.color(0x93a1a1),
+        strokeOpacity: 0
+      });
+
+      // -------------------------------------------------------
+      // ARC: Bangalore → Fullerton
+      // -------------------------------------------------------
+
+      var BLR = { lat: 12.9716, lon: 77.5946 };
+      var FUL = { lat: 33.8704, lon: -117.9242 };
+
+      function greatCirclePoints(lat1, lon1, lat2, lon2, n) {
+        var toRad = Math.PI / 180;
+        var toDeg = 180 / Math.PI;
+        lat1 *= toRad; lon1 *= toRad;
+        lat2 *= toRad; lon2 *= toRad;
+        var d = 2 * Math.asin(Math.sqrt(
+          Math.pow(Math.sin((lat1 - lat2) / 2), 2) +
+          Math.cos(lat1) * Math.cos(lat2) *
+          Math.pow(Math.sin((lon1 - lon2) / 2), 2)
+        ));
+        var points = [];
+        for (var i = 0; i <= n; i++) {
+          var f = i / n;
+          var A = Math.sin((1 - f) * d) / Math.sin(d);
+          var B = Math.sin(f * d) / Math.sin(d);
+          var x = A * Math.cos(lat1) * Math.cos(lon1) + B * Math.cos(lat2) * Math.cos(lon2);
+          var y = A * Math.cos(lat1) * Math.sin(lon1) + B * Math.cos(lat2) * Math.sin(lon2);
+          var z = A * Math.sin(lat1) + B * Math.sin(lat2);
+          points.push([
+            Math.atan2(y, x) * toDeg,
+            Math.atan2(z, Math.sqrt(x * x + y * y)) * toDeg
+          ]);
+        }
+        return points;
+      }
+
+      var arcPoints = greatCirclePoints(BLR.lat, BLR.lon, FUL.lat, FUL.lon, 80);
+
+      // Dotted line series
+      var lineSeries = chart.series.push(
+        am5map.MapLineSeries.new(root, {})
+      );
+      lineSeries.mapLines.template.setAll({
+        stroke: am5.color(0xdc322f),
+        strokeWidth: 2,
+        strokeDasharray: [6, 4],
+        strokeOpacity: 0.9
+      });
+
+      // -------------------------------------------------------
+      // CITY MARKERS — rendered on top of everything
+      // -------------------------------------------------------
+      var pointSeries = chart.series.push(
+        am5map.MapPointSeries.new(root, {
+          zIndex: 100
+        })
+      );
+
+      // Single bullet: Container holding both dot + label
+      pointSeries.bullets.push(function (root, series, dataItem) {
+        var name = "";
+        if (dataItem.dataContext && dataItem.dataContext.name) {
+          name = dataItem.dataContext.name;
+        }
+
+        var container = am5.Container.new(root, {
+          zIndex: 100
+        });
+
+        // Red dot
+        container.children.push(am5.Circle.new(root, {
+          radius: 6,
+          fill: am5.color(0xdc322f),
+          strokeWidth: 2,
+          stroke: am5.color(0xfdf6e3)
+        }));
+
+        // Label with background pill
+        if (name) {
+          container.children.push(am5.Label.new(root, {
+            text: name,
+            fill: am5.color(0x073642),
+            fontSize: 14,
+            fontWeight: "700",
+            fontFamily: "system-ui, sans-serif",
+            centerY: am5.p50,
+            paddingTop: 4,
+            paddingBottom: 4,
+            paddingLeft: 8,
+            paddingRight: 8,
+            dx: 14,
+            background: am5.RoundedRectangle.new(root, {
+              fill: am5.color(0xfdf6e3),
+              fillOpacity: 0.9,
+              stroke: am5.color(0x93a1a1),
+              strokeWidth: 1,
+              strokeOpacity: 0.4,
+              cornerRadiusTL: 4,
+              cornerRadiusTR: 4,
+              cornerRadiusBL: 4,
+              cornerRadiusBR: 4,
+              shadowColor: am5.color(0x000000),
+              shadowBlur: 6,
+              shadowOpacity: 0.15,
+              shadowOffsetY: 2
+            })
+          }));
+        }
+
+        return am5.Bullet.new(root, {
+          sprite: container
+        });
+      });
+
+      // Helper to add a labeled city
+      function addCity(lat, lon, name) {
+        pointSeries.data.push({
+          latitude: lat,
+          longitude: lon,
+          name: name
+        });
+      }
+
+      // Add Bangalore immediately
+      addCity(BLR.lat, BLR.lon, "Bangalore");
+
+      // -------------------------------------------------------
+      // SPEED CONTROLS
+      // -------------------------------------------------------
+      var ARC_DURATION  = 3000;  // total arc draw time in ms (↓ = faster)
+      var START_DELAY   = 1500;  // pause before animation begins
+      var RESUME_DELAY  = 2000;  // pause after arc before continuous spin
+      var SPIN_DURATION = 10000; // one full rotation in ms
+
+      // -------------------------------------------------------
+      // EASED TIMING — slow at endpoints, fast in the middle
+      // -------------------------------------------------------
+      function computeSegmentDelays(n, totalMs) {
+        var weights = [];
+        var totalWeight = 0;
+        for (var i = 0; i < n; i++) {
+          var t = (i + 0.5) / n;
+          var speed = Math.sin(t * Math.PI);
+          speed = Math.max(speed, 0.12);
+          var w = 1 / speed;
+          weights.push(w);
+          totalWeight += w;
+        }
+        return weights.map(function (w) {
+          return (w / totalWeight) * totalMs;
+        });
+      }
+
+      var segmentCount = arcPoints.length - 1;
+      var delays = computeSegmentDelays(segmentCount, ARC_DURATION);
+
+      // -------------------------------------------------------
+      // ANIMATION
+      // -------------------------------------------------------
+      chart.appear(1000, 100);
+
+      setTimeout(function () {
+        // Rotate globe eastward
+        chart.animate({
+          key: "rotationX",
+          to: -242.1,
+          duration: ARC_DURATION,
+          easing: am5.ease.inOut(am5.ease.cubic)
+        });
+        chart.animate({
+          key: "rotationY",
+          to: -34,
+          duration: ARC_DURATION,
+          easing: am5.ease.inOut(am5.ease.cubic)
+        });
+
+        // Draw segments with eased timing
+        var currentIndex = 0;
+
+        function drawNext() {
+          if (currentIndex >= segmentCount) {
+            // Arc complete — add Fullerton
+            addCity(FUL.lat, FUL.lon, "Fullerton, CA");
+
+            // Resume spin
+            setTimeout(function () {
+              chart.animate({
+                key: "rotationX",
+                from: chart.get("rotationX"),
+                to: chart.get("rotationX") + 360,
+                duration: SPIN_DURATION,
+                loops: Infinity
+              });
+            }, RESUME_DELAY);
+            return;
+          }
+
+          lineSeries.pushDataItem({
+            geometry: {
+              type: "LineString",
+              coordinates: [
+                arcPoints[currentIndex],
+                arcPoints[currentIndex + 1]
+              ]
+            }
+          });
+          currentIndex++;
+          setTimeout(drawNext, delays[currentIndex] || 0);
+        }
+
+        drawNext();
+      }, START_DELAY);
+    });
+  </script>
+</body>
+</html>
