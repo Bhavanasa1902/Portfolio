@@ -527,6 +527,7 @@ export const ProjectGrid = ({ width = 520, onModalOpen, onModalClose }) => {
       sub: 'Vertex AI · Anomaly',
       c: '#dc322f',
       tech: ['Python', 'Vertex AI', 'BigQuery'],
+      url: 'https://github.com/Bhavanasa1902/vertex-ai-fraud-detection',
       desc: 'Built an end-to-end fraud detection pipeline on Vertex AI covering transaction ingestion, feature engineering, and anomaly classification; model identified high-risk patterns across a dataset of 1M+ synthetic transactions with 89% precision.'
     },
     {
@@ -534,6 +535,7 @@ export const ProjectGrid = ({ width = 520, onModalOpen, onModalClose }) => {
       sub: 'CNN · OCR',
       c: '#268bd2',
       tech: ['Python', 'TensorFlow', 'NLP'],
+      url: 'https://github.com/Bhavanasa1902/nlp-document-modeling',
       desc: 'Developed an NLP document processing pipeline using CNN models and OCR to extract and structure unstructured text from 5+ document formats, reducing manual categorization effort for a 10K-document test corpus.'
     },
     {
@@ -541,6 +543,7 @@ export const ProjectGrid = ({ width = 520, onModalOpen, onModalClose }) => {
       sub: 'Relational · RT',
       c: '#2aa198',
       tech: ['Oracle', 'SQL', 'PL/SQL'],
+      url: 'https://github.com/Bhavanasa1902/textile-db-management',
       desc: 'Designed and implemented a relational database system supporting real-time inventory, order processing, and payment workflows with normalized schema design and query optimization.'
     },
     {
@@ -548,6 +551,7 @@ export const ProjectGrid = ({ width = 520, onModalOpen, onModalClose }) => {
       sub: 'React · Auth',
       c: '#b58900',
       tech: ['React', 'Firebase', 'Firestore'],
+      url: 'https://github.com/Bhavanasa1902/ecommerce-react-store',
       desc: 'Built a React-based Amazon clone with Firebase authentication, Firestore cart persistence, and dynamic product browsing across 5+ product categories.'
     },
   ];

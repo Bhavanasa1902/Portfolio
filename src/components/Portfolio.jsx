@@ -1,9 +1,185 @@
 import { useState, useEffect } from 'react';
 
+const HERO_METRICS = [
+  { value: '4', label: 'Shipped data & AI projects' },
+  { value: '8+', label: 'Production data pipelines' },
+  { value: '500K+', label: 'Transactions & telemetry processed' },
+  { value: '3', label: 'Years in production systems' },
+];
+
+const TECHNOLOGY_STACK = [
+  'SQL',
+  'Python',
+  'GCP',
+  'BigQuery',
+  'Vertex AI',
+  'ETL',
+  'Tableau',
+  'NLP',
+  'RAG',
+  'Oracle',
+];
+
+const PROJECTS = [
+  {
+    title: 'AI-Powered Financial Fraud Detection System',
+    tag: 'Vertex AI · Anomaly Detection · BigQuery',
+    color: '#dc322f',
+    tech: ['Vertex AI', 'BigQuery', 'Python', 'Cloud Functions'],
+    body: 'Built an end-to-end fraud detection pipeline on Vertex AI covering transaction ingestion, feature engineering, and anomaly classification; identified high-risk patterns with 89% precision.',
+    bullets: [
+      'Ingested and processed 1M+ synthetic transactions through feature engineering pipeline.',
+      'Trained and deployed anomaly detection model achieving 89% precision on transaction classification.',
+      'Integrated model outputs with alerting system for real-time fraud response.',
+    ],
+    url: 'https://github.com/Bhavanasa1902/AI-powered-Financial-Fraud-Detection-Anomaly-Analysis',
+  },
+  {
+    title: 'Content Modelling using NLP',
+    tag: 'CNN · OCR · NLP',
+    color: '#268bd2',
+    tech: ['NLP', 'OCR', 'TensorFlow', 'Python'],
+    body: 'Developed NLP document processing pipeline using CNN models and OCR to extract and structure unstructured text from diverse document formats.',
+    bullets: [
+      'Processed 5+ document formats using OCR and text cleaning pipelines.',
+      'Trained CNN models to classify text segments and extract structured metadata.',
+      'Reduced manual categorization effort for 10K-document test corpus through automation.',
+    ],
+    url: 'https://github.com/Bhavanasa1902/nlp-document-modeling',
+  },
+  {
+    title: 'Textile Database Management System',
+    tag: 'Oracle · PL/SQL · Normalization',
+    color: '#2aa198',
+    tech: ['Oracle', 'PL/SQL', 'SQL', 'Reporting'],
+    body: 'Designed and implemented a normalized textile inventory and order system with real-time transaction support and analytical reporting.',
+    bullets: [
+      'Created a normalized schema for orders, inventory, and supplier tracking.',
+      'Built stored procedures to keep stock and pricing consistent in real time.',
+      'Added reporting queries for demand forecasting and production planning.',
+    ],
+    url: 'https://github.com/Bhavanasa1902/textile-db-management',
+  },
+  {
+    title: 'E-Commerce Web Application',
+    tag: 'React · Firebase · Firestore',
+    color: '#b58900',
+    tech: ['React', 'Firebase', 'Firestore', 'Auth'],
+    body: 'Built a React-based Amazon clone with Firebase authentication, Firestore cart persistence, and dynamic product browsing across 5+ categories.',
+    bullets: [
+      'Implemented product discovery with search and filtering across 5+ product categories.',
+      'Built Firebase authentication, Firestore cart persistence, and secure checkout flow.',
+      'Optimized app performance with lazy loading and client-side caching.',
+    ],
+    url: 'https://github.com/Bhavanasa1902/ecommerce-react-store',
+  },
+  {
+    title: 'Book to Playlist',
+    tag: 'LLM · Music API · Web App',
+    color: '#859900',
+    tech: ['LLM', 'React', 'Spotify API', 'Python'],
+    body: 'AI-powered web application that transforms book themes and emotions into curated Spotify playlists using LLM analysis and music API integration.',
+    bullets: [
+      'Integrated LLM to analyze book themes, emotions, and narrative elements from user input.',
+      'Connected Spotify API to search and curate music matching extracted book characteristics.',
+      'Built interactive React interface for book input and playlist visualization.',
+    ],
+    url: 'https://github.com/Bhavanasa1902/book-to-playlist',
+  },
+  {
+    title: 'CryptoZombies Arena',
+    tag: 'Blockchain · Solidity · Web3',
+    color: '#6c71c4',
+    tech: ['Solidity', 'Web3', 'React', 'Ethereum'],
+    body: 'Built an interactive blockchain game using Solidity smart contracts and Web3 integration for on-chain arena battles.',
+    bullets: [
+      'Developed Solidity smart contracts for NFT-enabled gameplay and token interactions.',
+      'Connected a React front end with Web3 wallets for seamless player engagement.',
+      'Designed game logic for battles, rewards, and on-chain state updates.',
+    ],
+    url: 'https://github.com/Bhavanasa1902/CryptoZombies-Arena',
+  },
+  {
+    title: 'TitanFund',
+    tag: 'Fintech · Data Analytics · Dashboard',
+    color: '#b58900',
+    tech: ['React', 'Python', 'Analytics', 'Visualization'],
+    body: 'Developed a fintech dashboard platform for portfolio insights, analytics, and investment tracking.',
+    bullets: [
+      'Built a dashboard experience for tracking investment performance and portfolio metrics.',
+      'Connected backend analytics to frontend visualizations for real-time data updates.',
+      'Enabled users to explore fund performance with dynamic filtering and charting.',
+    ],
+    url: 'https://github.com/Bhavanasa1902/TitanFund',
+  },
+];
+
+const EXPERIENCE = [
+  {
+    tag: 'Graduate TA',
+    role: 'Graduate Teaching Assistant — ISDS 361B',
+    org: 'California State University, Fullerton',
+    dates: 'Jan 2026 – May 2026',
+    bullets: [
+      'Mentored 50+ students per semester in Excel, SQL, and business analytics.',
+      'Guided labs covering VLOOKUP, INDEX/MATCH, Pivot Tables, Power Query, and SQL.',
+      'Helped learners translate business questions into structured analysis.',
+    ],
+    color: 'cyan',
+  },
+  {
+    tag: 'Nokia SWE',
+    role: 'Database Software Engineer — Co-Op',
+    org: 'Nokia · Sunnyvale, CA',
+    dates: 'Sep – Dec 2025',
+    bullets: [
+      'Designed 4+ relational database schemas in PostgreSQL and MySQL for AI-driven inference pipelines, improving avg query response time by ~15% through composite indexing and normalization.',
+      'Consolidated 3 redundant ETL scheduled jobs into a single stored procedure pipeline, cutting avg batch completion time.',
+      'Built Python REST API integrations connecting backend services to OLTP databases, reducing avg DB round-trips per request by ~40%.',
+    ],
+    color: 'blue',
+  },
+  {
+    tag: 'Nokia Platform',
+    role: 'Platform Engineering Architect — Co-Op',
+    org: 'Nokia · Sunnyvale, CA',
+    dates: 'May – Aug 2025',
+    bullets: [
+      'Designed an AI-powered fault diagnostic pipeline on Google Cloud Vertex AI achieving 82% fault classification accuracy; contributed to 41% reduction in Mean Time to Resolution (MTTR).',
+      'Built log-processing pipelines on GCP (Pub/Sub → Dataflow → BigQuery) handling real-time telemetry, cutting manual triage effort by ~80% and enabling automated alerting.',
+      'Integrated LLM-powered semantic search using RAG architecture across CMDB, JIRA, and knowledge bases, reducing avg incident resolution time by over 35%.',
+    ],
+    color: 'blue',
+  },
+  {
+    tag: 'Cognizant SWE',
+    role: 'Senior Systems Engineer',
+    org: 'Cognizant · Bangalore, India',
+    dates: 'Dec 2023 – Aug 2024',
+    bullets: [
+      'Led Oracle DB performance engineering initiative across 3 production systems, improving overall throughput by 30% through query analysis, index rebuilding, and partition pruning.',
+      'Developed automated SQL data-validation framework in Python and PL/SQL spanning Oracle DB and SQL Server, catching ~200 cross-system discrepancies per month and reducing reconciliation time by 20%.',
+    ],
+    color: 'orange',
+  },
+  {
+    tag: 'Cognizant Analyst',
+    role: 'Programmer Analyst Trainee',
+    org: 'Cognizant · Bangalore, India',
+    dates: 'Mar 2022 – Dec 2023',
+    bullets: [
+      'Automated 8 internal ETL workflows using Python and SQL, reducing end-to-end processing time by ~20% and freeing ~15 hours/week of analyst time.',
+      'Performed data validation across Oracle DB and SQL Server for 4 production pipelines; built and delivered 6 executive Tableau dashboards tracking KPIs across revenue, operations, and compliance.',
+    ],
+    color: 'orange',
+  },
+];
+
 function Portfolio({ tweaks, onReplay }) {
   const [hasRealPhoto, setHasRealPhoto] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const [activeExperience, setActiveExperience] = useState(0);
 
   useEffect(() => {
     let timer;
@@ -35,15 +211,49 @@ function Portfolio({ tweaks, onReplay }) {
         <section className="hero-grid">
           <div>
             <h1 className="display">
-              Hello, I am <span style={{ color: 'var(--cyan)' }}>Bhavana</span>
+              I build the data foundations that let AI and analytics scale.
             </h1>
-            <p className="body" style={{ marginTop: 18, fontSize: 16.5, maxWidth: 520 }}>
-              I completed my Master's in Computer Science at <strong>CSU Fullerton</strong> in May 2026. I specialize in databases, AI-driven backend pipelines, and the unglamorous-but-thrilling art of making queries fast.
+            <p className="body" style={{ marginTop: 18, fontSize: 16.5, maxWidth: 560 }}>
+              After starting in Bangalore and earning my MS in Computer Science at <strong>CSU Fullerton</strong>, I focus on turning complex data systems into reliable, production-ready pipelines.
             </p>
-            <p className="body" style={{ maxWidth: 520 }}>
-              Two co-ops at Nokia, two-and-a-half years at Cognizant, and a teaching assistantship in Business Analytics later — I'm looking for full-time roles in <strong>data engineering, ML platform, or backend</strong> work where I can build things that scale.
+            <p className="body" style={{ maxWidth: 560 }}>
+              I bridge the gap between business questions and backend systems by building fast databases, cloud ETL, and ML-ready data workflows that teams can trust.
             </p>
-            <div style={{ display: 'flex', gap: 12, marginTop: 22, flexWrap: 'wrap' }}>
+            <div className="metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 12, marginTop: 28, marginBottom: 24 }}>
+              {HERO_METRICS.map((metric) => (
+                <div key={metric.label} className="card" style={{ padding: '18px 16px', textAlign: 'center' }}>
+                  <div className="serif" style={{ fontSize: 28, color: 'var(--base02)' }}>{metric.value}</div>
+                  <div className="mono" style={{ fontSize: 12, color: 'var(--base01)', marginTop: 4 }}>{metric.label}</div>
+                </div>
+              ))}
+            </div>
+            <div className="mono" style={{ fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'var(--base01)', marginBottom: 14 }}>Superpowers</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12, marginTop: 8 }}>
+              <div className="card">
+                <div className="sub" style={{ fontSize: 16, marginBottom: 8 }}>Reliable pipelines</div>
+                <p className="body" style={{ margin: 0, color: 'var(--base01)' }}>
+                  Build ETL and backend flows that avoid surprises, keep data fresh, and scale with demand.
+                </p>
+              </div>
+              <div className="card">
+                <div className="sub" style={{ fontSize: 16, marginBottom: 8 }}>Production-ready data</div>
+                <p className="body" style={{ margin: 0, color: 'var(--base01)' }}>
+                  Design databases, schemas, and observability so teams can ship analytics and ML with confidence.
+                </p>
+              </div>
+              <div className="card">
+                <div className="sub" style={{ fontSize: 16, marginBottom: 8 }}>Impact-first work</div>
+                <p className="body" style={{ margin: 0, color: 'var(--base01)' }}>
+                  Focus on outcomes: faster queries, lower batch time, and clearer business insights.
+                </p>
+              </div>
+            </div>
+            <div className="chip-row" style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 18 }}>
+              {TECHNOLOGY_STACK.map((tech) => (
+                <span key={tech} className="chip">{tech}</span>
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
               <a className="btn-cta" href="/Bhavana_Resume.pdf" target="_blank" rel="noopener">Download resume ↓</a>
               <a className="btn-soft" href="https://www.linkedin.com/in/bhavana-athavane/" target="_blank" rel="noopener">LinkedIn ↗</a>
               <a className="btn-soft" href="https://github.com/Bhavanasa1902" target="_blank" rel="noopener">GitHub ↗</a>
@@ -87,9 +297,9 @@ function Portfolio({ tweaks, onReplay }) {
           <h2 className="section">Contact</h2>
           <div className="contact-grid">
             <ContactRow icon="✉" label="bhavanasathavane@gmail.com" link="mailto:bhavanasathavane@gmail.com"/>
-            <ContactRow icon="in" label="bhavana-athavane" link="https://www.linkedin.com/in/bhavana-athavane/"/>
-            <ContactRow icon="gh" label="Bhavanasa1902" link="https://github.com/Bhavanasa1902"/>
+            <ContactRow icon="📞" label="+1 (657) 751-9230" link="tel:+16577519230"/>
             <ContactRow icon="📍" label="Fullerton, California, USA"/>
+            <ContactRow icon="💼" label="Open to data platform / AI engineering roles"/>
           </div>
         </section>
 
@@ -110,56 +320,40 @@ function Portfolio({ tweaks, onReplay }) {
           </div>
         </section>
 
-        {/* Experience timeline */}
+        {/* Experience tabs */}
         <section style={{ marginBottom: 56 }}>
           <h2 className="section">Experience</h2>
-          <div className="timeline">
-            <TLItem
-              color="cyan" tag="Jan 2026 – Present"
-              role="Graduate Teaching Assistant — ISDS 361B"
-              org="California State University, Fullerton"
-              bullets={[
-                "Mentored 50+ students per semester in applied business analytics, teaching advanced Excel (VLOOKUP, INDEX-MATCH, Pivot Tables, Power Query, Macros) and SQL for structured data analysis."
-              ]}
-            />
-            <TLItem
-              color="blue" tag="Sep – Dec 2025"
-              role="Database Software Engineer — Co-Op"
-              org="Nokia · Sunnyvale, CA"
-              bullets={[
-                "Designed 4+ relational database schemas in PostgreSQL and MySQL for AI-driven backend inference pipelines, improving average query response time by ~15% through composite indexing and schema normalization.",
-                "Consolidated 3 redundant ETL scheduled jobs into a single stored procedure pipeline, cutting average batch completion time by ~30%.",
-                "Built Python REST API integrations connecting backend services to OLTP databases, reducing average DB round-trips per request by ~40% and improving response time."
-              ]}
-            />
-            <TLItem
-              color="blue" tag="May – Aug 2025"
-              role="Platform Engineering Architect — Co-Op"
-              org="Nokia · Sunnyvale, CA"
-              bullets={[
-                "Designed an AI-powered fault diagnostic pipeline on Google Cloud Vertex AI, processing network telemetry achieving 82% fault classification accuracy; pipeline contributed to a 41% reduction in Mean Time to Resolution (MTTR) in testing environments.",
-                "Built and deployed log-processing pipelines on GCP (Pub/Sub -> Dataflow -> BigQuery) handling real-time telemetry streams, cutting manual triage effort by ~80% and enabling automated alerting.",
-                "Integrated LLM-powered semantic search using a RAG architecture across CMDB, JIRA, and internal knowledge bases, reducing average incident resolution time by over 35% in team trials."
-              ]}
-            />
-            <TLItem
-              color="orange" tag="Dec 2023 – Aug 2024"
-              role="Senior Systems Engineer"
-              org="Cognizant · Bangalore, India"
-              bullets={[
-                "Led an Oracle DB performance engineering initiative across 3 production systems, improving overall throughput by 30% through query plan analysis, index rebuilding, and partition pruning strategies – directly supporting SLA compliance.",
-                "Developed an automated SQL data-validation framework in Python and PL/SQL spanning Oracle DB and SQL Server, catching ~200 cross-system reporting discrepancies per month and reducing reconciliation time by 20%."
-              ]}
-            />
-            <TLItem
-              color="orange" tag="Mar 2022 – Dec 2023"
-              role="Programmer Analyst Trainee"
-              org="Cognizant · Bangalore, India"
-              bullets={[
-                "Automated 8 internal ETL workflows using Python and SQL, reducing end-to-end processing time by ~20% and freeing ~15 hours/week of analyst time previously spent on manual data movement.",
-                "Performed data validation across Oracle DB and SQL Server for 4 production pipelines; built and delivered 6 executive Tableau dashboards tracking KPIs across revenue, operations, and compliance to enable data-driven decision making."
-              ]}
-            />
+          <div className="experience-tabs">
+            {EXPERIENCE.map((item, index) => (
+              <button
+                key={item.tag}
+                className={`tab-button ${activeExperience === index ? 'active' : ''}`}
+                onClick={() => setActiveExperience(index)}
+              >
+                {item.tag}
+              </button>
+            ))}
+          </div>
+          <div className="tab-panel">
+            {(() => {
+              const item = EXPERIENCE[activeExperience];
+              return (
+                <div className="card" style={{ padding: '24px 26px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 14, flexWrap: 'wrap', marginBottom: 12 }}>
+                    <div>
+                      <div className="serif" style={{ fontSize: 22, fontWeight: 600, color: 'var(--base02)', lineHeight: 1.15 }}>{item.role}</div>
+                      <div style={{ fontSize: 12.5, color: 'var(--base00)', marginTop: 4 }}>{item.org}</div>
+                    </div>
+                    <div className="mono" style={{ fontSize: 10.5, color: '#fff', background: item.color === 'orange' ? '#cb4b16' : item.color === 'blue' ? '#268bd2' : '#2aa198', padding: '6px 12px', borderRadius: 999, whiteSpace: 'nowrap' }}>{item.dates}</div>
+                  </div>
+                  <ul style={{ margin: '0', paddingLeft: 18, fontSize: 14, color: 'var(--base01)', lineHeight: 1.55 }}>
+                    {item.bullets.map((bullet, idx) => (
+                      <li key={idx} style={{ marginBottom: 8 }}>{bullet}</li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })()}
           </div>
         </section>
 
@@ -167,30 +361,9 @@ function Portfolio({ tweaks, onReplay }) {
         <section style={{ marginBottom: 56 }}>
           <h2 className="section">Selected Projects</h2>
           <div className="two-col-grid gap-sm">
-            <ProjectCard
-              title="AI-Powered Financial Fraud Detection System"
-              tag="VERTEX AI · ANOMALY · PIPELINE"
-              color="#dc322f"
-              body="Built an end-to-end fraud detection pipeline on Vertex AI covering transaction ingestion, feature engineering, and anomaly classification; model identified high-risk patterns across a dataset of 1M+ synthetic transactions with 89% precision."
-            />
-            <ProjectCard
-              title="Content Modelling using NLP"
-              tag="CNN · OCR · NLP"
-              color="#268bd2"
-              body="Developed an NLP document processing pipeline using CNN models and OCR to extract and structure unstructured text from 5+ document formats, reducing manual categorization effort for a 10K-document test corpus."
-            />
-            <ProjectCard
-              title="Textile Database Management System"
-              tag="ORACLE · NORMALIZATION · PL/SQL"
-              color="#2aa198"
-              body="Designed and implemented a relational database system supporting real-time inventory, order processing, and payment workflows with normalized schema design and query optimization."
-            />
-            <ProjectCard
-              title="E-Commerce Web Application"
-              tag="REACT · AUTH · CART"
-              color="#b58900"
-              body="Built a React-based Amazon clone with Firebase authentication, Firestore cart persistence, and dynamic product browsing across 5+ product categories."
-            />
+            {PROJECTS.map((project) => (
+              <ProjectCard key={project.title} {...project} />
+            ))}
           </div>
         </section>
 
@@ -199,35 +372,35 @@ function Portfolio({ tweaks, onReplay }) {
           <h2 className="section">Technical Skills & Expertise</h2>
           <div className="two-col-grid">
             <div>
-              <SkillGroup title="Data Engineering & Databases" items={[
-                { l: 'SQL / PL/SQL', n: 5 },
-                { l: 'ETL/ELT Pipelines', n: 5 },
-                { l: 'PostgreSQL / Oracle DB', n: 5 },
-                { l: 'AWS Redshift / BigQuery', n: 5 },
-                { l: 'Data Warehousing', n: 5 },
+              <SkillGroup title="Programming & Query" items={[
+                { l: 'SQL / PL/SQL / Query Optimization', n: 5 },
+                { l: 'Python', n: 4 },
+                { l: 'ETL/ELT Pipeline Development', n: 4 },
+                { l: 'Database Design & Normalization', n: 4 },
+                { l: 'Java / JavaScript', n: 2 },
               ]}/>
-              <SkillGroup title="Platform & Systems" items={[
-                { l: 'Python / PySpark', n: 5 },
-                { l: 'Java / Spring Boot', n: 4 },
-                { l: 'Linux / Bash Scripting', n: 5 },
-                { l: 'RESTful APIs / Microservices', n: 4 },
-                { l: 'Docker & Kubernetes', n: 4 },
+              <SkillGroup title="Databases & Data Warehousing" items={[
+                { l: 'PostgreSQL / MySQL', n: 4 },
+                { l: 'Oracle DB / SQL Server', n: 4 },
+                { l: 'BigQuery / Redshift', n: 3 },
+                { l: 'Data Warehousing Architecture', n: 3 },
+                { l: 'Stored Procedures & Triggers', n: 4 },
               ]}/>
             </div>
             <div>
-              <SkillGroup title="Cloud & Infrastructure" items={[
-                { l: 'Google Cloud Platform (GCP)', n: 5 },
-                { l: 'Amazon Web Services (AWS)', n: 4 },
-                { l: 'CI/CD (GitHub Actions / Jenkins)', n: 5 },
-                { l: 'IaC (Terraform)', n: 4 },
-                { l: 'Git & Version Control', n: 5 },
+              <SkillGroup title="Cloud & AI" items={[
+                { l: 'Google Cloud Platform (GCP)', n: 4 },
+                { l: 'Vertex AI / ML Pipelines', n: 3 },
+                { l: 'BigQuery ML / Analytics', n: 3 },
+                { l: 'LLM Integration & Semantic Search', n: 4 },
+                { l: 'NLP & Text Analytics', n: 3 },
               ]}/>
-              <SkillGroup title="AI & Data Science Platform" items={[
-                { l: 'Vertex AI / ML Pipelines', n: 5 },
-                { l: 'BigQuery ML', n: 5 },
-                { l: 'NLP & Text Analytics', n: 4 },
-                { l: 'LLM & RAG Systems', n: 4 },
-                { l: 'Data Visualization (Tableau)', n: 4 },
+              <SkillGroup title="Tools & DevOps" items={[
+                { l: 'Git / Version Control', n: 4 },
+                { l: 'Tableau / Data Visualization', n: 4 },
+                { l: 'REST APIs / Microservices', n: 4 },
+                { l: 'Docker / Kubernetes', n: 2 },
+                { l: 'Jira / CI-CD Pipelines', n: 3 },
               ]}/>
             </div>
           </div>
@@ -254,22 +427,7 @@ function ContactRow({ icon, label, link }) {
   return inner;
 }
 
-function TLItem({ color, tag, role, org, bullets }) {
-  return (
-    <div className={`tl-item ${color}`}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: 8 }}>
-        <h3 className="sub" style={{ marginBottom: 2 }}>{role}</h3>
-        <span className={`tag ${color}`}>{tag}</span>
-      </div>
-      <div className="mono" style={{ fontSize: 12, color: 'var(--base00)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 8 }}>{org}</div>
-      <ul style={{ margin: 0, paddingLeft: 18, color: 'var(--base01)', fontSize: 14, lineHeight: 1.55 }}>
-        {bullets.map((b, i) => <li key={i} style={{ marginBottom: 4 }}>{b}</li>)}
-      </ul>
-    </div>
-  );
-}
-
-function ProjectCard({ title, tag, color, body }) {
+function ProjectCard({ title, tag, color, tech = [], body, bullets = [], url }) {
   return (
     <div className="card" style={{ position: 'relative', overflow: 'hidden', paddingTop: 22 }}>
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, background: color }}/>
@@ -277,7 +435,24 @@ function ProjectCard({ title, tag, color, body }) {
         <h3 className="sub">{title}</h3>
       </div>
       <div className="mono" style={{ fontSize: 11, color: color, textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 10 }}>{tag}</div>
-      <p className="body" style={{ marginBottom: 0 }}>{body}</p>
+      <div className="chip-row" style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+        {tech.map((item) => (
+          <span key={item} className="chip">{item}</span>
+        ))}
+      </div>
+      <p className="body" style={{ marginBottom: 14 }}>{body}</p>
+      {bullets.length > 0 && (
+        <ul style={{ margin: '0 0 18px', paddingLeft: 18, color: 'var(--base01)', fontSize: 14, lineHeight: 1.55 }}>
+          {bullets.map((bullet, idx) => (
+            <li key={idx} style={{ marginBottom: 6 }}>{bullet}</li>
+          ))}
+        </ul>
+      )}
+      {url && (
+        <a className="btn-soft" href={url} target="_blank" rel="noopener" style={{ display: 'inline-flex', alignItems: 'center' }}>
+          View Code ↗
+        </a>
+      )}
     </div>
   );
 }
