@@ -194,3 +194,4 @@ Simply remove or rename `public/photo/bhavana.jpg`. The component checks for the
 - Vite 5
 - CSS custom properties (Solarized palette)
 - Google Fonts (Fraunces, Inter, JetBrains Mono)
+
