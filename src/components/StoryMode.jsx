@@ -24,7 +24,7 @@ const FRAMES = [
   {
     poseFile: 'notebook',
     pos: { x: '32%', y: '92%' }, size: 62,
-    bubble: { text: "Currently finishing my Master's in Computer Science at CSU Fullerton.", side: 'right' },
+    bubble: { text: "Completed my Master's in Computer Science at CSU Fullerton in May 2026.", side: 'right' },
     art: { kind: 'UniCard', side: 'far-right', x: '68%', y: '52%' },
   },
   {
@@ -36,7 +36,7 @@ const FRAMES = [
   {
     poseFile: 'profile_peace',
     pos: { x: '30%', y: '70%' }, size: 48,
-    bubble: { text: "Graduating May 2026 — and on the lookout for full-time roles.", side: 'top' },
+    bubble: { text: "Completed my Master's in May 2026 — and currently on the lookout for full-time roles.", side: 'top' },
     art: { kind: 'Calendar', side: 'far-right', x: '62%', y: '52%' },
   },
   {
@@ -58,9 +58,9 @@ const FRAMES = [
         dates: 'Sep – Dec 2025',
         color: '#268bd2',
         bullets: [
-          'Optimized schemas across Oracle, MySQL, PostgreSQL — query latency ↓ 55%',
-          'SQL queries, stored procs, indexes — ETL runtime ↓ 65%',
-          'Built Python REST integrations to OLTP backends',
+          'Designed 4+ schemas in PostgreSQL & MySQL — query response ↓ ~15%',
+          'Consolidated 3 ETL jobs to stored proc — batch time ↓ ~30%',
+          'Built Python REST integrations, reducing DB round-trips by ~40%',
         ],
       },
     },
@@ -78,8 +78,8 @@ const FRAMES = [
         color: '#6c71c4',
         bullets: [
           'AI fault diagnostic pipeline on Vertex AI — 82% accuracy, MTTR ↓ 41%',
-          'GCP log pipelines (Pub/Sub, Dataflow, BigQuery) across 200+ nodes',
-          'LLM RAG semantic search across CMDB, Jira, runbooks',
+          'GCP log pipelines (Pub/Sub, Dataflow, BigQuery) handling real-time streams',
+          'LLM RAG semantic search across CMDB, JIRA, and knowledge bases',
         ],
       },
     },
@@ -96,9 +96,9 @@ const FRAMES = [
         dates: 'Mar 2022 – Aug 2024',
         color: '#cb4b16',
         bullets: [
-          'Oracle DB perf tuning — throughput ↑ 30%',
+          'Oracle DB tuning across 3 production systems — throughput ↑ 30%',
+          'Automated SQL data-validation framework (Python + PL/SQL) — reconciliation time ↓ 20%',
           'Automated 8 ETL workflows — saved 15 hrs/week',
-          '6 Tableau dashboards across revenue & ops',
         ],
       },
     },
@@ -263,7 +263,7 @@ function StoryMode({ tweaks, onFinish }) {
         <div
           key={`art-${idx}`}
           className={`scene-art ${f.art.side === 'far-l' || f.art.side === 'far-left' ? 'from-l' : 'from-r'}`}
-          style={artStyle}
+          style={{ ...artStyle, pointerEvents: f.art.kind === 'ProjectGrid' ? 'auto' : 'none' }}
         >
           {f.art.kind === 'TeachStack' ? (
             <TeachStack/>

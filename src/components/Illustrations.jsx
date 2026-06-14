@@ -29,9 +29,10 @@ export const USAMap = ({ width = 880 }) => {
         <path
           key={state}
           d={path}
-          fill={state === 'ca' ? '#073642' : '#eee8d5'}
-          stroke="#fdf6e3"
+          fill={state === 'ca' ? 'var(--base02)' : 'var(--base2)'}
+          stroke="var(--base3)"
           strokeWidth="1.5"
+          style={{ transition: 'fill 0.3s ease, stroke 0.3s ease' }}
         />
       ))}
       {/* Fullerton pin */}
@@ -40,14 +41,14 @@ export const USAMap = ({ width = 880 }) => {
           <animate attributeName="r" values="12;24;12" dur="2.4s" repeatCount="indefinite"/>
           <animate attributeName="opacity" values=".5;0;.5" dur="2.4s" repeatCount="indefinite"/>
         </circle>
-        <path d="M 0 -14 C 8 -14, 12 -6, 12 0 C 12 10, 0 24, 0 24 C 0 24, -12 10, -12 0 C -12 -6, -8 -14, 0 -14 Z" fill="#dc322f" stroke="#fdf6e3" strokeWidth="2"/>
-        <circle cx="0" cy="-2" r="4" fill="#fdf6e3"/>
+        <path d="M 0 -14 C 8 -14, 12 -6, 12 0 C 12 10, 0 24, 0 24 C 0 24, -12 10, -12 0 C -12 -6, -8 -14, 0 -14 Z" fill="var(--red)" stroke="var(--base3)" strokeWidth="2" style={{ transition: 'stroke 0.3s ease' }}/>
+        <circle cx="0" cy="-2" r="4" fill="var(--base3)" style={{ transition: 'fill 0.3s ease' }}/>
       </g>
       {/* Label */}
       <g transform="translate(105 300)">
-        <rect x="0" y="0" width="140" height="38" rx="6" fill="#fdf6e3" fillOpacity="0.95" stroke="#93a1a1" strokeWidth="1"/>
-        <text x="10" y="16" fontFamily="system-ui, sans-serif" fontSize="15" fontWeight="700" fill="#073642">Fullerton, CA</text>
-        <text x="10" y="30" fontFamily="ui-monospace, monospace" fontSize="12" fill="#586e75">33.87° N, 117.92° W</text>
+        <rect x="0" y="0" width="140" height="38" rx="6" fill="var(--base3)" fillOpacity="0.95" stroke="var(--base1)" strokeWidth="1" style={{ transition: 'fill 0.3s ease, stroke 0.3s ease' }}/>
+        <text x="10" y="16" fontFamily="system-ui, sans-serif" fontSize="15" fontWeight="700" fill="var(--base02)" style={{ transition: 'fill 0.3s ease' }}>Fullerton, CA</text>
+        <text x="10" y="30" fontFamily="ui-monospace, monospace" fontSize="12" fill="var(--base01)" style={{ transition: 'fill 0.3s ease' }}>33.87° N, 117.92° W</text>
       </g>
     </svg>
   );
@@ -90,7 +91,7 @@ function loadAmCharts() {
   return amchartsLoading;
 }
 
-function initGlobeChart(container) {
+function initGlobeChart(container, isDark) {
   const am5 = window.am5;
   const am5map = window.am5map;
   const am5themes_Animated = window.am5themes_Animated;
@@ -99,6 +100,18 @@ function initGlobeChart(container) {
   const root = am5.Root.new(container);
   root._logo?.dispose();
   root.setThemes([am5themes_Animated.new(root)]);
+
+  // Track timeouts for safe cleanup on unmount
+  const timeouts = [];
+  const safeTimeout = (fn, delay) => {
+    const id = setTimeout(() => {
+      const idx = timeouts.indexOf(id);
+      if (idx > -1) timeouts.splice(idx, 1);
+      if (!root.isDisposed()) fn();
+    }, delay);
+    timeouts.push(id);
+    return id;
+  };
 
   const chart = root.container.children.push(
     am5map.MapChart.new(root, {
@@ -114,7 +127,7 @@ function initGlobeChart(container) {
 
   const backgroundSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {}));
   backgroundSeries.mapPolygons.template.setAll({
-    fill: am5.color(0xeee8d5),
+    fill: am5.color(isDark ? 0x002b36 : 0xeee8d5),
     fillOpacity: 0.6,
     strokeOpacity: 0,
   });
@@ -124,8 +137,8 @@ function initGlobeChart(container) {
     am5map.MapPolygonSeries.new(root, { geoJSON: am5geodata_continentsLow })
   );
   polygonSeries.mapPolygons.template.setAll({
-    fill: am5.color(0x073642),
-    stroke: am5.color(0x073642),
+    fill: am5.color(isDark ? 0x073642 : 0x073642),
+    stroke: am5.color(isDark ? 0x586e75 : 0x073642),
     strokeWidth: 1.5,
     strokeOpacity: 1,
     interactive: false,
@@ -172,12 +185,12 @@ function initGlobeChart(container) {
       radius: 6,
       fill: am5.color(0xdc322f),
       strokeWidth: 2,
-      stroke: am5.color(0xfdf6e3),
+      stroke: am5.color(isDark ? 0x002b36 : 0xfdf6e3),
     }));
     if (name) {
       container.children.push(am5.Label.new(root, {
         text: name,
-        fill: am5.color(0x073642),
+        fill: am5.color(isDark ? 0xfdf6e3 : 0x073642),
         fontSize: 14,
         fontWeight: '700',
         fontFamily: 'system-ui, sans-serif',
@@ -188,9 +201,9 @@ function initGlobeChart(container) {
         paddingRight: 8,
         dx: 14,
         background: am5.RoundedRectangle.new(root, {
-          fill: am5.color(0xfdf6e3),
+          fill: am5.color(isDark ? 0x073642 : 0xfdf6e3),
           fillOpacity: 0.9,
-          stroke: am5.color(0x93a1a1),
+          stroke: am5.color(isDark ? 0x586e75 : 0x93a1a1),
           strokeWidth: 1,
           strokeOpacity: 0.4,
           cornerRadiusTL: 4, cornerRadiusTR: 4, cornerRadiusBL: 4, cornerRadiusBR: 4,
@@ -204,7 +217,9 @@ function initGlobeChart(container) {
     return am5.Bullet.new(root, { sprite: container });
   });
 
-  const addCity = (lat, lon, name) => pointSeries.data.push({ latitude: lat, longitude: lon, name });
+  const addCity = (lat, lon, name) => {
+    if (!root.isDisposed()) pointSeries.data.push({ latitude: lat, longitude: lon, name });
+  };
   addCity(BLR.lat, BLR.lon, 'Bangalore');
 
   const ARC_DURATION = 2000, START_DELAY = 500, RESUME_DELAY = 2000, SPIN_DURATION = 10000;
@@ -228,15 +243,18 @@ function initGlobeChart(container) {
 
   chart.appear(1000, 100);
 
-  setTimeout(() => {
+  safeTimeout(() => {
+    if (root.isDisposed()) return;
     chart.animate({ key: 'rotationX', to: -242.1, duration: ARC_DURATION, easing: am5.ease.inOut(am5.ease.cubic) });
     chart.animate({ key: 'rotationY', to: -34, duration: ARC_DURATION, easing: am5.ease.inOut(am5.ease.cubic) });
 
     let currentIndex = 0;
     function drawNext() {
+      if (root.isDisposed()) return;
       if (currentIndex >= segmentCount) {
         addCity(FUL.lat, FUL.lon, 'Fullerton, CA');
-        setTimeout(() => {
+        safeTimeout(() => {
+          if (root.isDisposed()) return;
           chart.animate({
             key: 'rotationX',
             from: chart.get('rotationX'),
@@ -254,25 +272,31 @@ function initGlobeChart(container) {
         },
       });
       currentIndex++;
-      setTimeout(drawNext, delays[currentIndex] || 0);
+      safeTimeout(drawNext, delays[currentIndex] || 0);
     }
     drawNext();
   }, START_DELAY);
 
-  return root;
+  return {
+    dispose: () => {
+      timeouts.forEach(clearTimeout);
+      root.dispose();
+    }
+  };
 }
 
 export const Globe = ({ width = 500 }) => {
   const containerRef = useRef(null);
   const rootRef = useRef(null);
   const [loading, setLoading] = useState(true);
+  const theme = document.documentElement.getAttribute('data-theme') || 'light';
 
   useEffect(() => {
     let mounted = true;
 
     loadAmCharts().then(() => {
       if (mounted && containerRef.current && !rootRef.current) {
-        rootRef.current = initGlobeChart(containerRef.current);
+        rootRef.current = initGlobeChart(containerRef.current, theme === 'dark');
         setLoading(false);
       }
     });
@@ -284,16 +308,16 @@ export const Globe = ({ width = 500 }) => {
         rootRef.current = null;
       }
     };
-  }, []);
+  }, [theme]);
 
   return (
     <div style={{ width, height: width, position: 'relative' }}>
       {loading && (
         <svg viewBox="0 0 100 100" width={width} height={width} style={{ position: 'absolute', top: 0, left: 0 }}>
-          <circle cx="50" cy="50" r="45" fill="#eee8d5" stroke="#073642" strokeWidth="1.5"/>
+          <circle cx="50" cy="50" r="45" fill="var(--base2)" stroke="var(--base02)" strokeWidth="1.5" style={{ transition: 'fill 0.3s ease, stroke 0.3s ease' }}/>
           <ellipse cx="50" cy="50" rx="45" ry="15" fill="none" stroke="rgba(7,54,66,.15)" strokeWidth="1"/>
           <ellipse cx="50" cy="50" rx="45" ry="30" fill="none" stroke="rgba(7,54,66,.15)" strokeWidth="1"/>
-          <circle cx="50" cy="50" r="3" fill="#073642">
+          <circle cx="50" cy="50" r="3" fill="var(--base02)" style={{ transition: 'fill 0.3s ease' }}>
             <animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite"/>
           </circle>
         </svg>
@@ -304,17 +328,17 @@ export const Globe = ({ width = 500 }) => {
 };
 
 export const UniCard = ({ width = 340, title = "California State University", sub = "Fullerton — Master of Science", line3 = "Computer Science · 2024 – 2026" }) => (
-  <div className="card" style={{ width, background: '#fff' }}>
+  <div className="card" style={{ width, background: 'var(--card-bg)' }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
       <svg viewBox="0 0 80 80" width="60" height="60">
         <defs>
           <linearGradient id="crest" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#cb4b16"/>
-            <stop offset="1" stopColor="#b58900"/>
+            <stop offset="0" stopColor="var(--orange)"/>
+            <stop offset="1" stopColor="var(--yellow)"/>
           </linearGradient>
         </defs>
-        <path d="M 40 6 L 70 18 L 70 44 C 70 60 56 70 40 76 C 24 70 10 60 10 44 L 10 18 Z" fill="url(#crest)" stroke="#073642" strokeWidth="1.5"/>
-        <text x="40" y="48" textAnchor="middle" fontFamily="Fraunces, serif" fontSize="22" fontWeight="700" fill="#fdf6e3">CSUF</text>
+        <path d="M 40 6 L 70 18 L 70 44 C 70 60 56 70 40 76 C 24 70 10 60 10 44 L 10 18 Z" fill="url(#crest)" stroke="var(--base02)" strokeWidth="1.5"/>
+        <text x="40" y="48" textAnchor="middle" fontFamily="Fraunces, serif" fontSize="22" fontWeight="700" fill="var(--base3)">CSUF</text>
       </svg>
       <div>
         <div className="serif" style={{ fontSize: 15, fontWeight: 600, color: 'var(--base02)', lineHeight: 1.2 }}>{title}</div>
@@ -326,12 +350,12 @@ export const UniCard = ({ width = 340, title = "California State University", su
 );
 
 export const BachCard = ({ width = 340 }) => (
-  <div className="card" style={{ width, background: '#fff' }}>
+  <div className="card" style={{ width, background: 'var(--card-bg)' }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
       <svg viewBox="0 0 80 80" width="60" height="60">
-        <path d="M 40 6 L 70 18 L 70 44 C 70 60 56 70 40 76 C 24 70 10 60 10 44 L 10 18 Z" fill="#6c71c4" stroke="#073642" strokeWidth="1.5"/>
-        <text x="40" y="42" textAnchor="middle" fontFamily="Fraunces, serif" fontSize="13" fontWeight="700" fill="#fdf6e3">JIT</text>
-        <text x="40" y="56" textAnchor="middle" fontFamily="ui-monospace,Menlo,monospace" fontSize="8" fill="#fdf6e3">B.E.</text>
+        <path d="M 40 6 L 70 18 L 70 44 C 70 60 56 70 40 76 C 24 70 10 60 10 44 L 10 18 Z" fill="var(--violet)" stroke="var(--base02)" strokeWidth="1.5"/>
+        <text x="40" y="42" textAnchor="middle" fontFamily="Fraunces, serif" fontSize="13" fontWeight="700" fill="var(--base3)">JIT</text>
+        <text x="40" y="56" textAnchor="middle" fontFamily="ui-monospace,Menlo,monospace" fontSize="8" fill="var(--base3)">B.E.</text>
       </svg>
       <div>
         <div className="serif" style={{ fontSize: 15, fontWeight: 600, color: 'var(--base02)', lineHeight: 1.2 }}>Jyothy Institute of Technology</div>
@@ -344,14 +368,14 @@ export const BachCard = ({ width = 340 }) => (
 
 export const Calendar = ({ width = 200, month = "MAY", day = "2026" }) => (
   <svg viewBox="0 0 220 220" width={width} style={{ display: 'block' }}>
-    <rect x="20" y="30" width="180" height="170" rx="14" fill="#fff" stroke="#073642" strokeWidth="1.8"/>
-    <rect x="20" y="30" width="180" height="46" rx="14" fill="#dc322f"/>
-    <rect x="20" y="60" width="180" height="16" fill="#dc322f"/>
-    <rect x="50" y="20" width="14" height="30" rx="3" fill="#073642"/>
-    <rect x="156" y="20" width="14" height="30" rx="3" fill="#073642"/>
-    <text x="110" y="62" textAnchor="middle" fontFamily="Fraunces, serif" fontSize="22" fontWeight="700" fill="#fdf6e3">{month}</text>
-    <text x="110" y="150" textAnchor="middle" fontFamily="Fraunces, serif" fontSize="56" fontWeight="700" fill="#073642">{day}</text>
-    <text x="110" y="182" textAnchor="middle" fontFamily="ui-monospace, Menlo, monospace" fontSize="15" fontWeight="600" fill="#586e75" letterSpacing="1">GRADUATION</text>
+    <rect x="20" y="30" width="180" height="170" rx="14" fill="var(--card-bg)" stroke="var(--base02)" strokeWidth="1.8"/>
+    <rect x="20" y="30" width="180" height="46" rx="14" fill="var(--red)"/>
+    <rect x="20" y="60" width="180" height="16" fill="var(--red)"/>
+    <rect x="50" y="20" width="14" height="30" rx="3" fill="var(--base02)"/>
+    <rect x="156" y="20" width="14" height="30" rx="3" fill="var(--base02)"/>
+    <text x="110" y="62" textAnchor="middle" fontFamily="Fraunces, serif" fontSize="22" fontWeight="700" fill="var(--base3)">{month}</text>
+    <text x="110" y="150" textAnchor="middle" fontFamily="Fraunces, serif" fontSize="56" fontWeight="700" fill="var(--base02)">{day}</text>
+    <text x="110" y="182" textAnchor="middle" fontFamily="ui-monospace, Menlo, monospace" fontSize="15" fontWeight="600" fill="var(--base01)" letterSpacing="1">GRADUATION</text>
   </svg>
 );
 
@@ -372,17 +396,17 @@ export const CodeWindow = ({ width = 420, lines = [
   "HAVING SUM(oi.qty * p.price) > 50000",
   "ORDER BY revenue DESC;",
 ] }) => (
-  <div style={{ width, background: '#073642', borderRadius: 12, border: '1.5px solid #002b36', boxShadow: '4px 4px 0 #073642', overflow: 'hidden' }}>
-    <div style={{ background: '#002b36', padding: '8px 12px', display: 'flex', gap: 6, alignItems: 'center' }}>
-      <span style={{ width: 10, height: 10, borderRadius: 5, background: '#dc322f' }}/>
-      <span style={{ width: 10, height: 10, borderRadius: 5, background: '#b58900' }}/>
-      <span style={{ width: 10, height: 10, borderRadius: 5, background: '#859900' }}/>
-      <span style={{ marginLeft: 8, color: '#93a1a1', fontFamily: 'var(--mono)', fontSize: 11 }}>ISDS_361B.sql</span>
+  <div style={{ width, background: 'var(--base02)', borderRadius: 12, border: '1.5px solid var(--base03)', boxShadow: '4px 4px 0 var(--base02)', overflow: 'hidden' }}>
+    <div style={{ background: 'var(--base03)', padding: '8px 12px', display: 'flex', gap: 6, alignItems: 'center' }}>
+      <span style={{ width: 10, height: 10, borderRadius: 5, background: 'var(--red)' }}/>
+      <span style={{ width: 10, height: 10, borderRadius: 5, background: 'var(--yellow)' }}/>
+      <span style={{ width: 10, height: 10, borderRadius: 5, background: 'var(--green)' }}/>
+      <span style={{ marginLeft: 8, color: 'var(--base1)', fontFamily: 'var(--mono)', fontSize: 11 }}>ISDS_361B.sql</span>
     </div>
     <div style={{ padding: '14px 16px', fontFamily: 'var(--mono)', fontSize: 12.5, lineHeight: 1.55 }}>
       {lines.map((l, i) => (
         <div key={i} style={{ whiteSpace: 'pre' }}>
-          <span style={{ color: '#586e75', marginRight: 12, userSelect: 'none' }}>{String(i + 1).padStart(2, '0')}</span>
+          <span style={{ color: 'var(--base01)', marginRight: 12, userSelect: 'none' }}>{String(i + 1).padStart(2, '0')}</span>
           {sqlHighlight(l).map((tok, j) => (
             <span key={j} style={{ color: SQL_COLORS[tok.t] }}>{tok.v}</span>
           ))}
@@ -401,36 +425,36 @@ export const ExcelSheet = ({ width = 380 }) => {
     ['Central', '$76K', '$91K', '+19.7%', '$85K', '✓'],
     ['South', '$54K', '$67K', '+24.1%', '$62K', '✓'],
   ];
-  const statusColors = { '✓': '#107c41', '—': '#b58900' };
+  const statusColors = { '✓': 'var(--green)', '—': 'var(--yellow)' };
   return (
-    <div style={{ width, background: '#fff', borderRadius: 10, border: '1.5px solid #073642', boxShadow: '4px 4px 0 #073642', overflow: 'hidden', fontFamily: 'var(--sans)' }}>
+    <div className="mobile-excel" style={{ width, background: 'var(--card-bg)', borderRadius: 10, border: '1.5px solid var(--base02)', boxShadow: '4px 4px 0 var(--base02)', overflow: 'hidden', fontFamily: 'var(--sans)' }}>
       <div style={{ background: '#107c41', padding: '8px 12px', display: 'flex', gap: 8, alignItems: 'center' }}>
-        <div style={{ width: 22, height: 22, borderRadius: 4, background: '#fff', color: '#107c41', fontWeight: 800, fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--serif)' }}>X</div>
+        <div style={{ width: 22, height: 22, borderRadius: 4, background: 'var(--base3)', color: '#107c41', fontWeight: 800, fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--serif)' }}>X</div>
         <span style={{ color: '#fff', fontSize: 12, fontWeight: 600 }}>regional_analytics.xlsx</span>
       </div>
       <div style={{ padding: 0 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '26px repeat(6, 1fr)', borderBottom: '1px solid #d4d4d4' }}>
-          <div style={{ background: '#f3f3f3', borderRight: '1px solid #d4d4d4' }}/>
+        <div style={{ display: 'grid', gridTemplateColumns: '26px repeat(6, 1fr)', borderBottom: '1px solid var(--base1)' }}>
+          <div style={{ background: 'var(--base2)', borderRight: '1px solid var(--base1)' }}/>
           {headers.map(h => (
-            <div key={h} style={{ background: '#f3f3f3', padding: '4px 5px', fontSize: 10, color: '#444', textAlign: 'center', borderRight: '1px solid #d4d4d4', fontFamily: 'var(--mono)' }}>{h}</div>
+            <div key={h} style={{ background: 'var(--base2)', padding: '4px 5px', fontSize: 10, color: 'var(--base01)', textAlign: 'center', borderRight: '1px solid var(--base1)', fontFamily: 'var(--mono)' }}>{h}</div>
           ))}
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '26px repeat(6, 1fr)', borderBottom: '1px solid #d4d4d4', background: '#107c41' }}>
-          <div style={{ padding: '4px 5px', fontSize: 10, color: '#666', textAlign: 'center', background: '#f3f3f3', borderRight: '1px solid #d4d4d4', fontFamily: 'var(--mono)' }}>1</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '26px repeat(6, 1fr)', borderBottom: '1px solid var(--base1)', background: '#107c41' }}>
+          <div style={{ padding: '4px 5px', fontSize: 10, color: 'var(--base00)', textAlign: 'center', background: 'var(--base2)', borderRight: '1px solid var(--base1)', fontFamily: 'var(--mono)' }}>1</div>
           {cols.map(c => (
             <div key={c} style={{ padding: '5px 6px', fontSize: 10, color: '#fff', fontWeight: 600, borderRight: '1px solid rgba(255,255,255,.2)' }}>{c}</div>
           ))}
         </div>
         {rows.map((r, i) => (
-          <div key={i} style={{ display: 'grid', gridTemplateColumns: '26px repeat(6, 1fr)', borderBottom: '1px solid #e8e8e8' }}>
-            <div style={{ padding: '4px 5px', fontSize: 10, color: '#666', textAlign: 'center', background: '#f3f3f3', borderRight: '1px solid #d4d4d4', fontFamily: 'var(--mono)' }}>{i + 2}</div>
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: '26px repeat(6, 1fr)', borderBottom: '1px solid var(--base1)' }}>
+            <div style={{ padding: '4px 5px', fontSize: 10, color: 'var(--base00)', textAlign: 'center', background: 'var(--base2)', borderRight: '1px solid var(--base1)', fontFamily: 'var(--mono)' }}>{i + 2}</div>
             {r.map((v, j) => (
               <div key={j} style={{
                 padding: '4px 6px',
                 fontSize: 10,
-                color: j === 3 ? (v.startsWith('+') ? '#107c41' : '#dc322f') : j === 5 ? statusColors[v] : '#1a1a1a',
-                borderRight: '1px solid #e8e8e8',
-                background: j === 3 ? 'rgba(16,124,65,.06)' : j === 5 ? 'rgba(16,124,65,.04)' : '#fff',
+                color: j === 3 ? (v.startsWith('+') ? 'var(--green)' : 'var(--red)') : j === 5 ? statusColors[v] : 'var(--base02)',
+                borderRight: '1px solid var(--base1)',
+                background: j === 3 ? 'rgba(133,153,0,.1)' : j === 5 ? 'rgba(133,153,0,.08)' : 'var(--card-bg)',
                 fontFamily: j === 0 ? 'var(--sans)' : 'var(--mono)',
                 fontWeight: j === 3 || j === 5 ? 600 : 400,
                 textAlign: j === 5 ? 'center' : 'left'
@@ -438,8 +462,8 @@ export const ExcelSheet = ({ width = 380 }) => {
             ))}
           </div>
         ))}
-        <div style={{ padding: '6px 10px', background: '#fafaf6', borderTop: '1px solid #d4d4d4', fontFamily: 'var(--mono)', fontSize: 10, color: '#107c41' }}>
-          fx&nbsp;&nbsp;<span style={{ color: '#444' }}>=IF(C2&gt;E2,"✓","—")</span>
+        <div style={{ padding: '6px 10px', background: 'var(--base3)', borderTop: '1px solid var(--base1)', fontFamily: 'var(--mono)', fontSize: 10, color: '#107c41' }}>
+          fx&nbsp;&nbsp;<span style={{ color: 'var(--base01)' }}>=IF(C2&gt;E2,"✓","—")</span>
         </div>
       </div>
     </div>
@@ -503,14 +527,14 @@ export const ProjectGrid = ({ width = 520, onModalOpen, onModalClose }) => {
       sub: 'Vertex AI · Anomaly',
       c: '#dc322f',
       tech: ['Python', 'Vertex AI', 'BigQuery'],
-      desc: 'Engineered an end-to-end fraud detection pipeline integrating large-scale transaction ingestion, feature engineering, and AI-based anomaly classification using Vertex AI to identify high-risk financial patterns.'
+      desc: 'Built an end-to-end fraud detection pipeline on Vertex AI covering transaction ingestion, feature engineering, and anomaly classification; model identified high-risk patterns across a dataset of 1M+ synthetic transactions with 89% precision.'
     },
     {
       t: 'NLP Content Modelling',
       sub: 'CNN · OCR',
       c: '#268bd2',
       tech: ['Python', 'TensorFlow', 'NLP'],
-      desc: 'Developed an NLP-driven document processing pipeline leveraging CNN models and OCR to extract, structure, and summarize unstructured textual data for downstream analytics.'
+      desc: 'Developed an NLP document processing pipeline using CNN models and OCR to extract and structure unstructured text from 5+ document formats, reducing manual categorization effort for a 10K-document test corpus.'
     },
     {
       t: 'Textile DB System',
@@ -523,8 +547,8 @@ export const ProjectGrid = ({ width = 520, onModalOpen, onModalClose }) => {
       t: 'E-Commerce App',
       sub: 'React · Auth',
       c: '#b58900',
-      tech: ['React', 'JavaScript', 'Node.js'],
-      desc: 'Built a React-based Amazon clone implementing authentication, cart persistence, and dynamic product browsing during internship.'
+      tech: ['React', 'Firebase', 'Firestore'],
+      desc: 'Built a React-based Amazon clone with Firebase authentication, Firestore cart persistence, and dynamic product browsing across 5+ product categories.'
     },
   ];
   return (
@@ -592,7 +616,7 @@ export const OpenToWork = ({ width = 280 }) => (
       Data Engineering · ML Platform · Backend
     </div>
     <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'rgba(253,246,227,0.75)', marginTop: 10 }}>
-      Available May 2026
+      Available Immediately
     </div>
     <style>{`
       @keyframes pulse {

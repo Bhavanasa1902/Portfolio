@@ -25,6 +25,14 @@ function useTweaks(defaults) {
 function App() {
   const [mode, setMode] = useState('story');
   const [tweaks] = useTweaks(TWEAK_DEFAULTS);
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     document.body.classList.remove('serif-heavy', 'sans-heavy');
@@ -33,6 +41,14 @@ function App() {
 
   return (
     <>
+      <button
+        className="theme-toggle"
+        onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
+        aria-label="Toggle theme"
+      >
+        {theme === 'light' ? '🌙' : '☀️'}
+      </button>
+
       {mode === 'story' ? (
         <StoryMode tweaks={tweaks} onFinish={() => setMode('portfolio')} />
       ) : (

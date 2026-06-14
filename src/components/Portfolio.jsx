@@ -17,6 +17,15 @@ function Portfolio({ tweaks, onReplay }) {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+      document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   const showFlipped = hasRealPhoto && (isHovering ? !isFlipped : isFlipped);
 
   return (
@@ -29,7 +38,7 @@ function Portfolio({ tweaks, onReplay }) {
               Hello, I am <span style={{ color: 'var(--cyan)' }}>Bhavana</span>
             </h1>
             <p className="body" style={{ marginTop: 18, fontSize: 16.5, maxWidth: 520 }}>
-              I'm a Computer Science grad student at <strong>CSU Fullerton</strong>, finishing my Master's in May 2026. I work on databases, AI-driven backend systems, and the unglamorous-but-thrilling art of making queries fast.
+              I completed my Master's in Computer Science at <strong>CSU Fullerton</strong> in May 2026. I specialize in databases, AI-driven backend pipelines, and the unglamorous-but-thrilling art of making queries fast.
             </p>
             <p className="body" style={{ maxWidth: 520 }}>
               Two co-ops at Nokia, two-and-a-half years at Cognizant, and a teaching assistantship in Business Analytics later — I'm looking for full-time roles in <strong>data engineering, ML platform, or backend</strong> work where I can build things that scale.
@@ -37,6 +46,7 @@ function Portfolio({ tweaks, onReplay }) {
             <div style={{ display: 'flex', gap: 12, marginTop: 22, flexWrap: 'wrap' }}>
               <a className="btn-cta" href="/Bhavana_Resume.pdf" target="_blank" rel="noopener">Download resume ↓</a>
               <a className="btn-soft" href="https://www.linkedin.com/in/bhavana-athavane/" target="_blank" rel="noopener">LinkedIn ↗</a>
+              <a className="btn-soft" href="https://github.com/Bhavanasa1902" target="_blank" rel="noopener">GitHub ↗</a>
               <button className="btn-soft" onClick={onReplay}>Replay intro ↺</button>
             </div>
           </div>
@@ -60,12 +70,12 @@ function Portfolio({ tweaks, onReplay }) {
                     </clipPath>
                   </defs>
                   <image
-                    href="/photo/bhavana.jpg"
-                    x="0" y="0"
-                    width="340" height="420"
-                    preserveAspectRatio="xMidYMin slice"
-                    clipPath="url(#blob-clip)"
-                  />
+                     href="/photo/bhavana.jpg"
+                     x="0" y="0"
+                     width="340" height="420"
+                     preserveAspectRatio="xMidYMin slice"
+                     clipPath="url(#blob-clip)"
+                   />
                 </svg>
               </div>
             </div>
@@ -76,8 +86,9 @@ function Portfolio({ tweaks, onReplay }) {
         <section style={{ marginBottom: 56 }}>
           <h2 className="section">Contact</h2>
           <div className="contact-grid">
-            <ContactRow icon="✉" label="bhavana.sa@csu.fullerton.edu"/>
+            <ContactRow icon="✉" label="bhavanasathavane@gmail.com" link="mailto:bhavanasathavane@gmail.com"/>
             <ContactRow icon="in" label="bhavana-athavane" link="https://www.linkedin.com/in/bhavana-athavane/"/>
+            <ContactRow icon="gh" label="Bhavanasa1902" link="https://github.com/Bhavanasa1902"/>
             <ContactRow icon="📍" label="Fullerton, California, USA"/>
           </div>
         </section>
@@ -108,8 +119,7 @@ function Portfolio({ tweaks, onReplay }) {
               role="Graduate Teaching Assistant — ISDS 361B"
               org="California State University, Fullerton"
               bullets={[
-                "Mentor 50+ students/semester in applied business analytics — 95% completion rate, 18% lift in average quiz scores.",
-                "Hands-on instruction in advanced Excel (VLOOKUP, INDEX-MATCH, Pivot Tables, Power Query, Macros) and SQL across 100K+ row datasets."
+                "Mentored 50+ students per semester in applied business analytics, teaching advanced Excel (VLOOKUP, INDEX-MATCH, Pivot Tables, Power Query, Macros) and SQL for structured data analysis."
               ]}
             />
             <TLItem
@@ -117,9 +127,9 @@ function Portfolio({ tweaks, onReplay }) {
               role="Database Software Engineer — Co-Op"
               org="Nokia · Sunnyvale, CA"
               bullets={[
-                "Designed and optimized relational schemas across Oracle, MySQL, PostgreSQL — query latency ↓ 55%.",
-                "Engineered SQL queries, stored procs, and multi-level indexes that cut ETL pipeline runtime by 65%.",
-                "Built Python REST integrations connecting backend services to OLTP databases, reducing end-to-end latency."
+                "Designed 4+ relational database schemas in PostgreSQL and MySQL for AI-driven backend inference pipelines, improving average query response time by ~15% through composite indexing and schema normalization.",
+                "Consolidated 3 redundant ETL scheduled jobs into a single stored procedure pipeline, cutting average batch completion time by ~30%.",
+                "Built Python REST API integrations connecting backend services to OLTP databases, reducing average DB round-trips per request by ~40% and improving response time."
               ]}
             />
             <TLItem
@@ -127,9 +137,9 @@ function Portfolio({ tweaks, onReplay }) {
               role="Platform Engineering Architect — Co-Op"
               org="Nokia · Sunnyvale, CA"
               bullets={[
-                "AI-powered fault diagnostic pipeline on Vertex AI — 82% classification accuracy, MTTR ↓ 41%.",
-                "Scalable log pipelines on GCP (Pub/Sub, Dataflow, BigQuery) handling real-time telemetry across 200+ nodes.",
-                "Integrated LLM semantic search (RAG) across CMDB, Jira, and knowledge bases — runbooks surfaced 3× faster."
+                "Designed an AI-powered fault diagnostic pipeline on Google Cloud Vertex AI, processing network telemetry achieving 82% fault classification accuracy; pipeline contributed to a 41% reduction in Mean Time to Resolution (MTTR) in testing environments.",
+                "Built and deployed log-processing pipelines on GCP (Pub/Sub -> Dataflow -> BigQuery) handling real-time telemetry streams, cutting manual triage effort by ~80% and enabling automated alerting.",
+                "Integrated LLM-powered semantic search using a RAG architecture across CMDB, JIRA, and internal knowledge bases, reducing average incident resolution time by over 35% in team trials."
               ]}
             />
             <TLItem
@@ -137,8 +147,8 @@ function Portfolio({ tweaks, onReplay }) {
               role="Senior Systems Engineer"
               org="Cognizant · Bangalore, India"
               bullets={[
-                "Led Oracle DB performance engineering — system throughput ↑ 30%, supporting SLA compliance.",
-                "Built automated SQL data-validation framework in Python + PL/SQL, reducing reporting inconsistencies by 20%."
+                "Led an Oracle DB performance engineering initiative across 3 production systems, improving overall throughput by 30% through query plan analysis, index rebuilding, and partition pruning strategies – directly supporting SLA compliance.",
+                "Developed an automated SQL data-validation framework in Python and PL/SQL spanning Oracle DB and SQL Server, catching ~200 cross-system reporting discrepancies per month and reducing reconciliation time by 20%."
               ]}
             />
             <TLItem
@@ -146,8 +156,8 @@ function Portfolio({ tweaks, onReplay }) {
               role="Programmer Analyst Trainee"
               org="Cognizant · Bangalore, India"
               bullets={[
-                "Automated 8 internal ETL workflows — efficiency ↑ 20%, freed up 15 hrs/week for higher-value analytics.",
-                "Multi-source data validation across Oracle DB and SQL Server; delivered 6 Tableau dashboards across revenue, ops, compliance."
+                "Automated 8 internal ETL workflows using Python and SQL, reducing end-to-end processing time by ~20% and freeing ~15 hours/week of analyst time previously spent on manual data movement.",
+                "Performed data validation across Oracle DB and SQL Server for 4 production pipelines; built and delivered 6 executive Tableau dashboards tracking KPIs across revenue, operations, and compliance to enable data-driven decision making."
               ]}
             />
           </div>
@@ -158,50 +168,66 @@ function Portfolio({ tweaks, onReplay }) {
           <h2 className="section">Selected Projects</h2>
           <div className="two-col-grid gap-sm">
             <ProjectCard
-              title="AI-Powered Financial Fraud Detection"
-              tag="VERTEX AI · ANOMALY"
+              title="AI-Powered Financial Fraud Detection System"
+              tag="VERTEX AI · ANOMALY · PIPELINE"
               color="#dc322f"
-              body="End-to-end fraud detection pipeline integrating large-scale transaction ingestion, feature engineering, and Vertex AI anomaly classification to identify high-risk financial patterns."
+              body="Built an end-to-end fraud detection pipeline on Vertex AI covering transaction ingestion, feature engineering, and anomaly classification; model identified high-risk patterns across a dataset of 1M+ synthetic transactions with 89% precision."
             />
             <ProjectCard
               title="Content Modelling using NLP"
               tag="CNN · OCR · NLP"
               color="#268bd2"
-              body="NLP-driven document processing pipeline using CNN models and OCR to extract, structure, and summarize unstructured textual data for downstream analytics."
+              body="Developed an NLP document processing pipeline using CNN models and OCR to extract and structure unstructured text from 5+ document formats, reducing manual categorization effort for a 10K-document test corpus."
             />
             <ProjectCard
               title="Textile Database Management System"
-              tag="ORACLE · NORMALIZATION"
+              tag="ORACLE · NORMALIZATION · PL/SQL"
               color="#2aa198"
-              body="Relational database system supporting real-time inventory, order processing, and payment workflows — normalized schema design and aggressive query optimization."
+              body="Designed and implemented a relational database system supporting real-time inventory, order processing, and payment workflows with normalized schema design and query optimization."
             />
             <ProjectCard
               title="E-Commerce Web Application"
               tag="REACT · AUTH · CART"
               color="#b58900"
-              body="React-based Amazon-style storefront with authentication, cart persistence, and dynamic product browsing — built during internship."
+              body="Built a React-based Amazon clone with Firebase authentication, Firestore cart persistence, and dynamic product browsing across 5+ product categories."
             />
           </div>
         </section>
 
         {/* Skills */}
         <section style={{ marginBottom: 56 }}>
-          <h2 className="section">Technical Skills</h2>
+          <h2 className="section">Technical Skills & Expertise</h2>
           <div className="two-col-grid">
             <div>
-              <SkillGroup title="Programming" items={[
-                { l: 'Python', n: 5 }, { l: 'SQL', n: 5 }, { l: 'Java', n: 4 }, { l: 'JavaScript', n: 4 },
+              <SkillGroup title="Data Engineering & Databases" items={[
+                { l: 'SQL / PL/SQL', n: 5 },
+                { l: 'ETL/ELT Pipelines', n: 5 },
+                { l: 'PostgreSQL / Oracle DB', n: 5 },
+                { l: 'AWS Redshift / BigQuery', n: 5 },
+                { l: 'Data Warehousing', n: 5 },
               ]}/>
-              <SkillGroup title="Databases" items={[
-                { l: 'Oracle DB', n: 5 }, { l: 'PostgreSQL', n: 5 }, { l: 'MySQL', n: 4 }, { l: 'SQL Server', n: 4 }, { l: 'AWS Redshift', n: 3 },
+              <SkillGroup title="Platform & Systems" items={[
+                { l: 'Python / PySpark', n: 5 },
+                { l: 'Java / Spring Boot', n: 4 },
+                { l: 'Linux / Bash Scripting', n: 5 },
+                { l: 'RESTful APIs / Microservices', n: 4 },
+                { l: 'Docker & Kubernetes', n: 4 },
               ]}/>
             </div>
             <div>
-              <SkillGroup title="Cloud & AI" items={[
-                { l: 'Google Cloud (GCP)', n: 5 }, { l: 'Vertex AI', n: 4 }, { l: 'BigQuery ML', n: 4 }, { l: 'LLM / RAG', n: 4 }, { l: 'NLP', n: 3 },
+              <SkillGroup title="Cloud & Infrastructure" items={[
+                { l: 'Google Cloud Platform (GCP)', n: 5 },
+                { l: 'Amazon Web Services (AWS)', n: 4 },
+                { l: 'CI/CD (GitHub Actions / Jenkins)', n: 5 },
+                { l: 'IaC (Terraform)', n: 4 },
+                { l: 'Git & Version Control', n: 5 },
               ]}/>
-              <SkillGroup title="Tools" items={[
-                { l: 'Git', n: 5 }, { l: 'Tableau', n: 4 }, { l: 'Jira REST APIs', n: 4 }, { l: 'ETL Pipelines', n: 5 },
+              <SkillGroup title="AI & Data Science Platform" items={[
+                { l: 'Vertex AI / ML Pipelines', n: 5 },
+                { l: 'BigQuery ML', n: 5 },
+                { l: 'NLP & Text Analytics', n: 4 },
+                { l: 'LLM & RAG Systems', n: 4 },
+                { l: 'Data Visualization (Tableau)', n: 4 },
               ]}/>
             </div>
           </div>
